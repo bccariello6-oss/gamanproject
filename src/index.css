@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,600&family=DM+Sans:wght@400;500;700&family=Noto+Serif+JP:wght@300;400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0E0C0A;
+  --color-secondary: #1A1714;
+  --color-card: #211E1A;
+  --color-cream: #F2EBD9;
+  --color-cream-dim: #A89880;
+  --color-crimson: #8B1A1A;
+  --color-crimson-light: #C0392B;
+  --color-amber: #C8922A;
+  --color-amber-dim: #7A5A1E;
+  --color-ink: #0A0806;
+
+  --font-display: 'Noto Serif JP', serif;
+  --font-sans: 'DM Sans', sans-serif;
+  --font-serif: 'Cormorant Garamond', serif;
+}
+
+:root {
+  --bg-primary: #0E0C0A;
+  --bg-secondary: #1A1714;
+  --bg-card: #211E1A;
+  --cream: #F2EBD9;
+  --cream-dim: #A89880;
+  --crimson: #8B1A1A;
+  --crimson-light: #C0392B;
+  --amber: #C8922A;
+  --amber-dim: #7A5A1E;
+  --ink: #0A0806;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-primary);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-crimson);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Watermarks */
+.kanji-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 40vw;
+  color: rgba(139, 26, 26, 0.03);
+  pointer-events: none;
+  z-index: 0;
+  white-space: nowrap;
+}
+
+.kanji-watermark-detail {
+  position: absolute;
+  top: 0%;
+  right: 0%;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 8rem;
+  color: rgba(139, 26, 26, 0.05);
+  pointer-events: none;
+  z-index: 0;
+  line-height: 1;
+}
+
+/* Hide scrollbar for category sidebar but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
