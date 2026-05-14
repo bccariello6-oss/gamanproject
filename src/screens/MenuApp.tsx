@@ -74,11 +74,23 @@ export default function MenuApp() {
   const [showHistory, setShowHistory] = useState(false);
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
   const [orderCompletedAlert, setOrderCompletedAlert] = useState<boolean>(false);
+  const [pendingOrderItems, setPendingOrderItems] = useState<{name: string; qty: number; obs: string}[]>([]);
+  const [currentOrderItems, setCurrentOrderItems] = useState<{name: string; qty: number; obs: string}[]>([]);
+  const [itemDispatchedAlert, setItemDispatchedAlert] = useState<string | null>(null);
+  const [showOrderTracker, setShowOrderTracker] = useState(false);
   
-  // Persist pending order id across reloads temporarily
+  // Persist pending order id and items across reloads
   useEffect(() => {
     const savedPending = sessionStorage.getItem('gaman_pending_order');
     if (savedPending) setPendingOrderId(savedPending);
+    const savedItems = sessionStorage.getItem('gaman_pending_items');
+    if (savedItems) {
+      try {
+        const parsed = JSON.parse(savedItems);
+        setPendingOrderItems(parsed);
+        setCurrentOrderItems(parsed);
+      } catch(e) {}
+    }
   }, []);
 
   useEffect(() => {
@@ -86,6 +98,7 @@ export default function MenuApp() {
       sessionStorage.setItem('gaman_pending_order', pendingOrderId);
     } else {
       sessionStorage.removeItem('gaman_pending_order');
+      sessionStorage.removeItem('gaman_pending_items');
     }
   }, [pendingOrderId]);
   useEffect(() => {
@@ -110,11 +123,34 @@ export default function MenuApp() {
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'gaman_orders', filter: `id=eq.${pendingOrderId}` },
         (payload) => {
-          const updatedOrder = payload.new;
-          if (updatedOrder.status === 'completed') {
+          const updatedOrder = payload.new as any;
+          
+          // Check if items were removed (kitchen dispatched individual item)
+          if (updatedOrder.items && Array.isArray(updatedOrder.items)) {
+            const prevCount = currentOrderItems.length;
+            const newCount = updatedOrder.items.length;
+            
+            if (newCount < prevCount && newCount > 0) {
+              // Find which item was dispatched
+              const prevNames = currentOrderItems.map((i: any) => i.name);
+              const newNames = updatedOrder.items.map((i: any) => i.name);
+              const dispatched = prevNames.find((n: string, idx: number) => !newNames.includes(n) || prevNames.filter((x: string) => x === n).length > newNames.filter((x: string) => x === n).length);
+              if (dispatched) {
+                playWaiterAlert();
+                setItemDispatchedAlert(dispatched);
+                setTimeout(() => setItemDispatchedAlert(null), 5000);
+              }
+            }
+            setCurrentOrderItems(updatedOrder.items);
+          }
+          
+          if (updatedOrder.status === 'completed' || (updatedOrder.items && updatedOrder.items.length === 0)) {
             playWaiterAlert();
             setOrderCompletedAlert(true);
             setPendingOrderId(null);
+            setPendingOrderItems([]);
+            setCurrentOrderItems([]);
+            setShowOrderTracker(false);
             setTimeout(() => setOrderCompletedAlert(false), 10000);
           }
         }
@@ -124,7 +160,7 @@ export default function MenuApp() {
     return () => {
       supabase.removeChannel(ch);
     };
-  }, [pendingOrderId]);
+  }, [pendingOrderId, currentOrderItems]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -186,6 +222,10 @@ export default function MenuApp() {
     
     if (data && data[0]) {
       setPendingOrderId(data[0].id);
+      const submittedItems = state.items.map(i => ({ name: i.name, qty: i.quantity, obs: observations }));
+      setPendingOrderItems(submittedItems);
+      setCurrentOrderItems(submittedItems);
+      sessionStorage.setItem('gaman_pending_items', JSON.stringify(submittedItems));
     }
     
     // Clear cart and show success
@@ -420,13 +460,84 @@ export default function MenuApp() {
         </button>
       )}
 
-      {/* Alert Garçom */}
+      {/* Floating Order Tracker Button */}
+      {pendingOrderId && !showOrderTracker && (
+        <button
+          onClick={() => setShowOrderTracker(true)}
+          className="fixed bottom-28 right-4 md:right-8 z-30 bg-card border-2 border-amber/40 p-3.5 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 text-amber hover:scale-105 transition-all animate-fade-in"
+          style={{ animation: 'pulse 2s infinite, fadeInUp 0.3s ease-out' }}
+        >
+          <span className="text-xl">📋</span>
+          <span className="hidden sm:inline uppercase tracking-widest text-[10px] font-bold">Acompanhar</span>
+        </button>
+      )}
+
+      {/* Order Tracker Popup */}
+      {showOrderTracker && pendingOrderId && (
+        <div className="fixed bottom-28 right-4 md:right-8 z-[70] w-[320px] max-w-[90vw] bg-secondary border border-amber/30 rounded-2xl shadow-[0_16px_64px_rgba(0,0,0,0.8)] animate-fade-in overflow-hidden">
+          <div className="bg-card p-3 border-b border-amber/20 flex justify-between items-center">
+            <h4 className="font-display text-base text-cream italic flex items-center gap-2">
+              <span className="text-amber">📋</span> Acompanhamento
+            </h4>
+            <button onClick={() => setShowOrderTracker(false)} className="text-cream-dim hover:text-crimson text-lg transition-colors">✕</button>
+          </div>
+          <div className="p-3 max-h-[40vh] overflow-y-auto">
+            <div className="flex flex-col gap-2">
+              {pendingOrderItems.map((item, idx) => {
+                const stillPending = currentOrderItems.some((ci: any) => ci.name === item.name);
+                return (
+                  <div key={idx} className={`flex items-center gap-2.5 py-2 px-2 rounded-lg transition-all duration-500 ${stillPending ? 'bg-card border border-ink' : 'bg-green-900/30 border border-green-500/30'}`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold transition-all duration-500 ${
+                      stillPending ? 'bg-amber/20 text-amber border border-amber/40' : 'bg-green-500 text-white'
+                    }`}>
+                      {stillPending ? '⏳' : '✓'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-sm font-medium block truncate transition-all duration-500 ${stillPending ? 'text-cream' : 'text-green-400 line-through opacity-70'}`}>
+                        {item.name}
+                      </span>
+                    </div>
+                    <span className={`text-xs font-bold shrink-0 px-1.5 py-0.5 rounded transition-all duration-500 ${stillPending ? 'bg-amber/10 text-amber' : 'bg-green-500/20 text-green-400'}`}>
+                      x{item.qty}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-3 pt-2 border-t border-ink flex justify-between items-center">
+              <span className="text-xs text-cream-dim">
+                {currentOrderItems.length === 0 ? 'Todos prontos!' : `${pendingOrderItems.length - currentOrderItems.length}/${pendingOrderItems.length} prontos`}
+              </span>
+              <div className="w-24 h-1.5 bg-ink rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-green-500 rounded-full transition-all duration-700" 
+                  style={{ width: `${pendingOrderItems.length > 0 ? ((pendingOrderItems.length - currentOrderItems.length) / pendingOrderItems.length) * 100 : 0}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Item Dispatched Alert */}
+      {itemDispatchedAlert && (
+         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-sky-600 border-2 border-sky-400 rounded-2xl p-5 text-white shadow-[0_16px_64px_rgba(2,132,199,0.7)] animate-fade-in flex items-center gap-4 w-[90%] max-w-sm">
+            <span className="text-3xl">🍣</span>
+            <div className="flex flex-col flex-1">
+               <span className="font-bold text-base uppercase tracking-widest">Item Pronto!</span>
+               <span className="font-medium text-white/90 text-sm">{itemDispatchedAlert} está a caminho.</span>
+            </div>
+            <button onClick={() => setItemDispatchedAlert(null)} className="font-bold text-xl hover:text-white/80 transition-colors">✕</button>
+         </div>
+      )}
+
+      {/* Alert Garçom - All Complete */}
       {orderCompletedAlert && (
          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-green-600 border-2 border-green-400 rounded-2xl p-6 text-white shadow-[0_16px_64px_rgba(22,101,52,0.9)] animate-fade-in flex items-center gap-4 w-[90%] max-w-sm sm:max-w-md">
-            <span className="text-4xl">🍣</span>
+            <span className="text-4xl">🎉</span>
             <div className="flex flex-col flex-1">
                <span className="font-bold text-xl uppercase tracking-widest text-white shadow-sm">Pedido Concluído!</span>
-               <span className="font-medium text-white/90">Seu pedido já está a caminho da mesa.</span>
+               <span className="font-medium text-white/90">Todos os itens estão prontos e a caminho da mesa.</span>
             </div>
             <button onClick={() => setOrderCompletedAlert(false)} className="ml-2 font-bold text-2xl hover:text-white/80 transition-colors">✕</button>
          </div>
