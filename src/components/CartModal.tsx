@@ -24,8 +24,20 @@ export default function CartModal({ onClose, onSubmit }: Props) {
     setIsSubmitting(true);
     
     try {
-      // Save to history before clearing
-      localStorage.setItem('gaman_last_order', JSON.stringify(state.items));
+      // Save to history - accumulate during the night
+      const historyKey = 'gaman_order_history_' + new Date().toISOString().slice(0, 10);
+      const existingHistory = JSON.parse(localStorage.getItem(historyKey) || '[]');
+      const newItems = state.items.map(i => ({ ...i }));
+      // Merge: if same item exists, sum quantities; otherwise add
+      newItems.forEach(newItem => {
+        const existing = existingHistory.find((h: any) => h.id === newItem.id);
+        if (existing) {
+          existing.quantity += newItem.quantity;
+        } else {
+          existingHistory.push(newItem);
+        }
+      });
+      localStorage.setItem(historyKey, JSON.stringify(existingHistory));
       await onSubmit(tableNumber, observations);
     } catch (err) {
       console.error(err);
@@ -130,7 +142,7 @@ export default function CartModal({ onClose, onSubmit }: Props) {
 
         {/* Footer */}
         {state.items.length > 0 && (
-          <div className="p-6 border-t border-amber-dim/20 bg-card rounded-b-xl flex flex-col gap-6 shrink-0">
+          <div className="p-6 border-t border-amber-dim/20 bg-card rounded-b-xl flex flex-col gap-5 shrink-0">
             <div className="flex justify-between items-end">
               <span className="text-cream-dim uppercase tracking-widest text-sm font-bold">Total Peças</span>
               <span className="text-4xl font-serif text-amber italic font-bold">{numItems}</span>
@@ -148,33 +160,31 @@ export default function CartModal({ onClose, onSubmit }: Props) {
                 />
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 items-center">
-                <div className="flex-1 w-full relative">
-                  <label className="block text-xs uppercase tracking-widest text-cream-dim mb-1 font-bold">Número da Mesa *</label>
-                  <input 
-                    type="number"
-                    value={tableNumber}
-                    onChange={e => setTableNumber(e.target.value)}
-                    className="w-full bg-secondary border border-amber/30 rounded p-3 text-2xl text-cream focus:border-amber focus:outline-none transition-colors text-center"
-                    placeholder="00"
-                    required
-                  />
-                  {error && <p className="text-crimson-light text-xs mt-1 absolute -bottom-5">{error}</p>}
-                </div>
-                
-                <button 
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className={`w-full sm:w-2/3 py-4 mt-5 sm:mt-0 rounded-lg font-bold tracking-widest uppercase transition-all shadow-lg text-lg flex items-center justify-center h-[64px]
-                    ${isSubmitting 
-                      ? 'bg-amber-dim text-cream cursor-not-allowed'
-                      : 'bg-green-700 hover:bg-green-600 text-white active:scale-95'}`}
-                >
-                  {isSubmitting ? (
-                    <span className="animate-spin text-2xl mr-2">⟳</span>
-                  ) : '✓ Enviar para Cozinha'}
-                </button>
+              <div>
+                <label className="block text-xs uppercase tracking-widest text-cream-dim mb-1 font-bold">Número da Mesa *</label>
+                <input 
+                  type="number"
+                  value={tableNumber}
+                  onChange={e => { setTableNumber(e.target.value); setError(''); }}
+                  className={`w-full bg-secondary border rounded p-3 text-2xl text-cream focus:border-amber focus:outline-none transition-colors text-center ${error ? 'border-crimson' : 'border-amber/30'}`}
+                  placeholder="00"
+                  required
+                />
+                {error && <p className="text-crimson-light text-sm mt-2 flex items-center gap-2"><span>⚠</span> {error}</p>}
               </div>
+
+              <button 
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className={`w-full py-4 rounded-lg font-bold tracking-widest uppercase transition-all shadow-lg text-lg flex items-center justify-center h-[64px]
+                  ${isSubmitting 
+                    ? 'bg-amber-dim text-cream cursor-not-allowed'
+                    : 'bg-green-700 hover:bg-green-600 text-white active:scale-95'}`}
+              >
+                {isSubmitting ? (
+                  <span className="animate-spin text-2xl mr-2">⟳</span>
+                ) : '✓ Enviar para Cozinha'}
+              </button>
             </div>
           </div>
         )}

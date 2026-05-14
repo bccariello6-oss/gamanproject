@@ -34,15 +34,62 @@ const ToriiGate = ({ className = "w-5 h-5" }: { className?: string }) => (
   </svg>
 );
 
+async function playWaiterAlert() {
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    if (ctx.state === 'suspended') await ctx.resume();
+    
+    // High pitched chime like a hotel bell - distinct from kitchen gong
+    const frequencies = [880, 1108.73, 1318.51];
+    const startTime = ctx.currentTime;
+    
+    frequencies.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      const noteStartTime = startTime + (i * 0.12);
+      osc.frequency.setValueAtTime(freq, noteStartTime);
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.setValueAtTime(0.5, noteStartTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, noteStartTime + 1.5);
+      osc.start(noteStartTime);
+      osc.stop(noteStartTime + 1.6);
+    });
+  } catch(_) {}
+}
+
+function getHistoryKey() {
+  return 'gaman_order_history_' + new Date().toISOString().slice(0, 10);
+}
+
 export default function MenuApp() {
   const [activeCategory, setActiveCategory] = useState(MENU_DATA.categories[0].id);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [lastOrder, setLastOrder] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
+  const [orderCompletedAlert, setOrderCompletedAlert] = useState<boolean>(false);
   
+  // Persist pending order id across reloads temporarily
   useEffect(() => {
-    const saved = localStorage.getItem('gaman_last_order');
+    const savedPending = sessionStorage.getItem('gaman_pending_order');
+    if (savedPending) setPendingOrderId(savedPending);
+  }, []);
+
+  useEffect(() => {
+    if (pendingOrderId) {
+      sessionStorage.setItem('gaman_pending_order', pendingOrderId);
+    } else {
+      sessionStorage.removeItem('gaman_pending_order');
+    }
+  }, [pendingOrderId]);
+  useEffect(() => {
+    const saved = localStorage.getItem(getHistoryKey());
     if (saved) {
       try {
         setLastOrder(JSON.parse(saved));
@@ -54,6 +101,30 @@ export default function MenuApp() {
   const categoryRefs = useRef<Record<string, HTMLElement | null>>({});
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!pendingOrderId) return;
+    
+    const ch = supabase.channel('client_order_updates')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'gaman_orders', filter: `id=eq.${pendingOrderId}` },
+        (payload) => {
+          const updatedOrder = payload.new;
+          if (updatedOrder.status === 'completed') {
+            playWaiterAlert();
+            setOrderCompletedAlert(true);
+            setPendingOrderId(null);
+            setTimeout(() => setOrderCompletedAlert(false), 10000);
+          }
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [pendingOrderId]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,18 +170,22 @@ export default function MenuApp() {
   };
 
   const handleOrderSubmit = async (tableNumber: string, observations: string) => {
-    const { error } = await supabase.from('gaman_orders').insert({
+    const { data, error } = await supabase.from('gaman_orders').insert({
       table: parseInt(tableNumber, 10) || 0,
       items: state.items.map(i => ({
          name: i.name,
          qty: i.quantity,
          obs: observations
       }))
-    });
+    }).select();
     
     if (error) {
       console.error('Supabase error:', error);
       throw error;
+    }
+    
+    if (data && data[0]) {
+      setPendingOrderId(data[0].id);
     }
     
     // Clear cart and show success
@@ -122,8 +197,7 @@ export default function MenuApp() {
   if (isSuccessOpen) {
     return <OrderSuccess onComplete={() => {
       setIsSuccessOpen(false);
-      // Refresh history state
-      const saved = localStorage.getItem('gaman_last_order');
+      const saved = localStorage.getItem(getHistoryKey());
       if (saved) setLastOrder(JSON.parse(saved));
     }} />;
   }
@@ -136,6 +210,16 @@ export default function MenuApp() {
       setShowHistory(false);
       setIsCartOpen(true);
     }
+  };
+
+  const handleBackToMenu = () => {
+    // Load history items into cart and go back to menu
+    if (lastOrder.length > 0) {
+      lastOrder.forEach(item => {
+        dispatch({ type: 'SET_QTY', payload: { item, quantity: item.quantity } });
+      });
+    }
+    setShowHistory(false);
   };
 
   return (
@@ -199,7 +283,7 @@ export default function MenuApp() {
             <button 
               onClick={() => setShowHistory(true)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-amber p-2 flex items-center justify-center bg-card rounded-full shadow-lg border border-amber/20"
-              title="Repetir Último Pedido"
+              title="Pedidos da Noite"
             >
               <span className="text-lg">🕒</span>
             </button>
@@ -224,7 +308,7 @@ export default function MenuApp() {
       </div>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 md:ml-64 p-4 md:p-6 pt-32 md:pt-12 pb-64">
+      <main className="flex-1 md:ml-64 p-4 md:p-6 pt-32 md:pt-12 pb-80 md:pb-64">
         {MENU_DATA.categories.map(category => {
           const catItems = MENU_DATA.items.filter(i => i.category === category.id);
           if (catItems.length === 0) return null;
@@ -274,25 +358,51 @@ export default function MenuApp() {
           <div className="absolute inset-0 bg-primary/95 backdrop-blur-sm" onClick={() => setShowHistory(false)} />
           <div className="relative bg-secondary border border-amber/30 rounded-2xl w-full max-w-md overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.8)]">
             <div className="bg-card p-4 border-b border-amber/20 flex justify-between items-center">
-              <h3 className="font-display text-xl text-cream italic">Último Pedido</h3>
+              <h3 className="font-display text-xl text-cream italic">Pedidos da Noite</h3>
               <button onClick={() => setShowHistory(false)} className="text-cream-dim hover:text-crimson transition-colors text-2xl">✕</button>
             </div>
-            <div className="p-6 max-h-[60vh] overflow-y-auto space-y-4">
+            <div className="p-4 max-h-[50vh] overflow-y-auto space-y-2">
               {lastOrder.map((item, idx) => (
-                <div key={idx} className="flex justify-between items-center border-b border-ink/50 pb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="bg-amber/10 text-amber px-2 py-0.5 rounded text-sm font-bold">x{item.quantity}</span>
-                    <span className="text-cream font-medium">{item.name}</span>
+                <div key={idx} className="flex items-center justify-between gap-3 border-b border-ink/50 py-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="bg-amber/10 text-amber px-2 py-0.5 rounded text-sm font-bold shrink-0">x{item.quantity}</span>
+                    <span className="text-cream font-medium truncate">{item.name}</span>
+                  </div>
+                  <div className="flex gap-1.5 items-center shrink-0">
+                    <button onClick={() => {
+                      const newOrder = [...lastOrder];
+                      if (newOrder[idx].quantity > 1) {
+                        newOrder[idx].quantity -= 1;
+                      } else {
+                        newOrder.splice(idx, 1);
+                      }
+                      setLastOrder(newOrder);
+                    }} className="w-8 h-8 rounded-full border border-crimson/60 text-crimson hover:bg-crimson/20 flex items-center justify-center font-bold text-lg">
+                      −
+                    </button>
+                    <button onClick={() => {
+                      const newOrder = [...lastOrder];
+                      newOrder[idx].quantity += 1;
+                      setLastOrder(newOrder);
+                    }} className="w-8 h-8 rounded-full border border-green-500/60 text-green-500 hover:bg-green-500/20 flex items-center justify-center font-bold text-lg">
+                      +
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="p-6 bg-card border-t border-amber/20">
+            <div className="p-4 bg-card border-t border-amber/20 flex flex-col gap-3">
               <button 
                 onClick={handleRepeatLastOrder}
-                className="w-full py-4 bg-crimson hover:bg-crimson-light text-cream font-bold tracking-widest uppercase rounded-xl shadow-lg transition-all active:scale-95"
+                className="w-full py-3.5 bg-crimson hover:bg-crimson-light text-cream font-bold tracking-widest uppercase rounded-xl shadow-lg transition-all active:scale-95 text-sm"
               >
-                Repetir Tudo
+                Enviar Seleção ao Carrinho
+              </button>
+              <button 
+                onClick={handleBackToMenu}
+                className="w-full py-3 bg-transparent border border-amber/40 hover:border-amber text-amber font-bold tracking-widest uppercase rounded-xl transition-all active:scale-95 text-xs flex items-center justify-center gap-2"
+              >
+                ← Voltar ao Cardápio e Adicionar Mais
               </button>
             </div>
           </div>
@@ -306,8 +416,20 @@ export default function MenuApp() {
           className="hidden md:flex fixed bottom-28 left-8 z-30 bg-secondary border border-amber/30 p-4 rounded-full shadow-2xl items-center gap-3 text-amber hover:scale-105 transition-all group"
         >
           <span className="text-2xl group-hover:rotate-12 transition-transform">🕒</span>
-          <span className="uppercase tracking-[0.2em] text-[10px] font-bold">Último Pedido</span>
+          <span className="uppercase tracking-[0.2em] text-[10px] font-bold">Pedidos da Noite</span>
         </button>
+      )}
+
+      {/* Alert Garçom */}
+      {orderCompletedAlert && (
+         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-green-600 border-2 border-green-400 rounded-2xl p-6 text-white shadow-[0_16px_64px_rgba(22,101,52,0.9)] animate-fade-in flex items-center gap-4 w-[90%] max-w-sm sm:max-w-md">
+            <span className="text-4xl">🍣</span>
+            <div className="flex flex-col flex-1">
+               <span className="font-bold text-xl uppercase tracking-widest text-white shadow-sm">Pedido Concluído!</span>
+               <span className="font-medium text-white/90">Seu pedido já está a caminho da mesa.</span>
+            </div>
+            <button onClick={() => setOrderCompletedAlert(false)} className="ml-2 font-bold text-2xl hover:text-white/80 transition-colors">✕</button>
+         </div>
       )}
     </div>
   );
