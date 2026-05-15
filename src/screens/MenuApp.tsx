@@ -67,17 +67,26 @@ function getHistoryKey() {
 }
 
 export default function MenuApp() {
-  const [activeCategory, setActiveCategory] = useState(MENU_DATA.categories[0].id);
+  const [activeCategory, setActiveCategory] = useState(() => sessionStorage.getItem('gaman_category') || MENU_DATA.categories[0].id);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [lastOrder, setLastOrder] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
   const [orderCompletedAlert, setOrderCompletedAlert] = useState<boolean>(false);
-  const [pendingOrderItems, setPendingOrderItems] = useState<{name: string; qty: number; obs: string}[]>([]);
-  const [currentOrderItems, setCurrentOrderItems] = useState<{name: string; qty: number; obs: string}[]>([]);
+  const [pendingOrderItems, setPendingOrderItems] = useState<any[]>([]);
+  const [currentOrderItems, setCurrentOrderItems] = useState<any[]>([]);
   const [itemDispatchedAlert, setItemDispatchedAlert] = useState<string | null>(null);
   const [showOrderTracker, setShowOrderTracker] = useState(false);
+  const currentItemsRef = useRef(currentOrderItems);
+
+  useEffect(() => {
+    currentItemsRef.current = currentOrderItems;
+  }, [currentOrderItems]);
+
+  useEffect(() => {
+    sessionStorage.setItem('gaman_category', activeCategory);
+  }, [activeCategory]);
   
   // Persist pending order id and items across reloads
   useEffect(() => {
@@ -127,18 +136,21 @@ export default function MenuApp() {
           
           // Check if items were removed (kitchen dispatched individual item)
           if (updatedOrder.items && Array.isArray(updatedOrder.items)) {
-            const prevCount = currentOrderItems.length;
+            const prevCount = currentItemsRef.current.length;
             const newCount = updatedOrder.items.length;
             
             if (newCount < prevCount && newCount > 0) {
               // Find which item was dispatched
-              const prevNames = currentOrderItems.map((i: any) => i.name);
-              const newNames = updatedOrder.items.map((i: any) => i.name);
-              const dispatched = prevNames.find((n: string, idx: number) => !newNames.includes(n) || prevNames.filter((x: string) => x === n).length > newNames.filter((x: string) => x === n).length);
-              if (dispatched) {
-                playWaiterAlert();
-                setItemDispatchedAlert(dispatched);
-                setTimeout(() => setItemDispatchedAlert(null), 5000);
+              const prevTrackIds = currentItemsRef.current.map((i: any) => i._trackId);
+              const newTrackIds = updatedOrder.items.map((i: any) => i._trackId);
+              const dispatchedId = prevTrackIds.find((id: string) => !newTrackIds.includes(id));
+              if (dispatchedId) {
+                const dispatchedItem = currentItemsRef.current.find((i:any) => i._trackId === dispatchedId);
+                if (dispatchedItem) {
+                  playWaiterAlert();
+                  setItemDispatchedAlert(dispatchedItem.name);
+                  setTimeout(() => setItemDispatchedAlert(null), 5000);
+                }
               }
             }
             setCurrentOrderItems(updatedOrder.items);
@@ -155,12 +167,14 @@ export default function MenuApp() {
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+         console.log('Supabase Realtime Client Status:', status);
+      });
       
     return () => {
       supabase.removeChannel(ch);
     };
-  }, [pendingOrderId, currentOrderItems]);
+  }, [pendingOrderId]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -206,13 +220,16 @@ export default function MenuApp() {
   };
 
   const handleOrderSubmit = async (tableNumber: string, observations: string) => {
-    const { data, error } = await supabase.from('gaman_orders').insert({
-      table: parseInt(tableNumber, 10) || 0,
-      items: state.items.map(i => ({
+    const submittedItems = state.items.map(i => ({
          name: i.name,
          qty: i.quantity,
-         obs: observations
-      }))
+         obs: observations,
+         _trackId: Math.random().toString(36).substring(2, 11)
+    }));
+
+    const { data, error } = await supabase.from('gaman_orders').insert({
+      table: parseInt(tableNumber, 10) || 0,
+      items: submittedItems
     }).select();
     
     if (error) {
@@ -222,7 +239,6 @@ export default function MenuApp() {
     
     if (data && data[0]) {
       setPendingOrderId(data[0].id);
-      const submittedItems = state.items.map(i => ({ name: i.name, qty: i.quantity, obs: observations }));
       setPendingOrderItems(submittedItems);
       setCurrentOrderItems(submittedItems);
       sessionStorage.setItem('gaman_pending_items', JSON.stringify(submittedItems));
@@ -464,17 +480,17 @@ export default function MenuApp() {
       {pendingOrderId && !showOrderTracker && (
         <button
           onClick={() => setShowOrderTracker(true)}
-          className="fixed bottom-28 right-4 md:right-8 z-30 bg-card border-2 border-amber/40 p-3.5 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 text-amber hover:scale-105 transition-all animate-fade-in"
+          className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] bg-card border-2 border-amber/40 py-2.5 px-6 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 text-amber hover:scale-105 transition-all animate-fade-in"
           style={{ animation: 'pulse 2s infinite, fadeInUp 0.3s ease-out' }}
         >
           <span className="text-xl">📋</span>
-          <span className="hidden sm:inline uppercase tracking-widest text-[10px] font-bold">Acompanhar</span>
+          <span className="uppercase tracking-widest text-[11px] font-bold">Acompanhar</span>
         </button>
       )}
 
       {/* Order Tracker Popup */}
       {showOrderTracker && pendingOrderId && (
-        <div className="fixed bottom-28 right-4 md:right-8 z-[70] w-[320px] max-w-[90vw] bg-secondary border border-amber/30 rounded-2xl shadow-[0_16px_64px_rgba(0,0,0,0.8)] animate-fade-in overflow-hidden">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[70] w-[320px] max-w-[90vw] bg-secondary border border-amber/30 rounded-2xl shadow-[0_16px_64px_rgba(0,0,0,0.8)] animate-fade-in overflow-hidden">
           <div className="bg-card p-3 border-b border-amber/20 flex justify-between items-center">
             <h4 className="font-display text-base text-cream italic flex items-center gap-2">
               <span className="text-amber">📋</span> Acompanhamento
@@ -484,7 +500,7 @@ export default function MenuApp() {
           <div className="p-3 max-h-[40vh] overflow-y-auto">
             <div className="flex flex-col gap-2">
               {pendingOrderItems.map((item, idx) => {
-                const stillPending = currentOrderItems.some((ci: any) => ci.name === item.name);
+                const stillPending = currentOrderItems.some((ci: any) => ci._trackId === item._trackId);
                 return (
                   <div key={idx} className={`flex items-center gap-2.5 py-2 px-2 rounded-lg transition-all duration-500 ${stillPending ? 'bg-card border border-ink' : 'bg-green-900/30 border border-green-500/30'}`}>
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold transition-all duration-500 ${
