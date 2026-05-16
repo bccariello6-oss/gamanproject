@@ -127,36 +127,26 @@ export default function MenuApp() {
   useEffect(() => {
     if (!pendingOrderId) return;
     
-    const ch = supabase.channel('client_order_updates')
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'gaman_orders', filter: `id=eq.${pendingOrderId}` },
-        (payload) => {
-          const updatedOrder = payload.new as any;
+    let isFetching = false;
+    
+    const fetchOrderStatus = async () => {
+      if (isFetching) return;
+      isFetching = true;
+      
+      try {
+        const { data, error } = await supabase
+          .from('gaman_orders')
+          .select('*')
+          .eq('id', pendingOrderId)
+          .single();
           
-          // Check if items were removed (kitchen dispatched individual item)
-          if (updatedOrder.items && Array.isArray(updatedOrder.items)) {
-            const prevCount = currentItemsRef.current.length;
-            const newCount = updatedOrder.items.length;
-            
-            if (newCount < prevCount && newCount > 0) {
-              // Find which item was dispatched
-              const prevTrackIds = currentItemsRef.current.map((i: any) => i._trackId);
-              const newTrackIds = updatedOrder.items.map((i: any) => i._trackId);
-              const dispatchedId = prevTrackIds.find((id: string) => !newTrackIds.includes(id));
-              if (dispatchedId) {
-                const dispatchedItem = currentItemsRef.current.find((i:any) => i._trackId === dispatchedId);
-                if (dispatchedItem) {
-                  playWaiterAlert();
-                  setItemDispatchedAlert(dispatchedItem.name);
-                  setTimeout(() => setItemDispatchedAlert(null), 5000);
-                }
-              }
-            }
-            setCurrentOrderItems(updatedOrder.items);
-          }
-          
-          if (updatedOrder.status === 'completed' || (updatedOrder.items && updatedOrder.items.length === 0)) {
+        if (error || !data) {
+          isFetching = false;
+          return;
+        }
+
+        if (data.status === 'completed' || (data.items && data.items.length === 0)) {
+          if (currentItemsRef.current.length > 0) {
             playWaiterAlert();
             setOrderCompletedAlert(true);
             setPendingOrderId(null);
@@ -165,14 +155,38 @@ export default function MenuApp() {
             setShowOrderTracker(false);
             setTimeout(() => setOrderCompletedAlert(false), 10000);
           }
+        } else if (data.items && Array.isArray(data.items)) {
+          const prevCount = currentItemsRef.current.length;
+          const newCount = data.items.length;
+          
+          if (newCount < prevCount && newCount > 0) {
+            const prevTrackIds = currentItemsRef.current.map((i: any) => i._trackId);
+            const newTrackIds = data.items.map((i: any) => i._trackId);
+            const dispatchedId = prevTrackIds.find((id: string) => !newTrackIds.includes(id));
+            if (dispatchedId) {
+              const dispatchedItem = currentItemsRef.current.find((i:any) => i._trackId === dispatchedId);
+              if (dispatchedItem) {
+                playWaiterAlert();
+                setItemDispatchedAlert(dispatchedItem.name);
+                setTimeout(() => setItemDispatchedAlert(null), 5000);
+              }
+            }
+          }
+          
+          setCurrentOrderItems(data.items);
         }
-      )
-      .subscribe((status) => {
-         console.log('Supabase Realtime Client Status:', status);
-      });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        isFetching = false;
+      }
+    };
+
+    const interval = setInterval(fetchOrderStatus, 3000);
+    fetchOrderStatus();
       
     return () => {
-      supabase.removeChannel(ch);
+      clearInterval(interval);
     };
   }, [pendingOrderId]);
 
@@ -334,16 +348,6 @@ export default function MenuApp() {
           </button>
           <h2 className="font-display text-crimson text-2xl tracking-widest uppercase mb-0.5">Gaman</h2>
           <span className="text-[9px] uppercase tracking-[0.3em] font-sans text-amber font-bold leading-none">Sushi Lounge</span>
-          
-          {lastOrder.length > 0 && (
-            <button 
-              onClick={() => setShowHistory(true)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-amber p-2 flex items-center justify-center bg-card rounded-full shadow-lg border border-amber/20"
-              title="Pedidos da Noite"
-            >
-              <span className="text-lg">🕒</span>
-            </button>
-          )}
         </div>
         
         <nav className="flex overflow-x-auto no-scrollbar border-t border-amber-dim/10 scroll-smooth">
@@ -465,14 +469,14 @@ export default function MenuApp() {
         </div>
       )}
 
-      {/* Desktop History Button */}
+      {/* History Button (All Devices) */}
       {!showHistory && lastOrder.length > 0 && (
         <button 
           onClick={() => setShowHistory(true)}
-          className="hidden md:flex fixed bottom-28 left-8 z-30 bg-secondary border border-amber/30 p-4 rounded-full shadow-2xl items-center gap-3 text-amber hover:scale-105 transition-all group"
+          className="fixed bottom-24 left-4 md:left-8 z-30 bg-secondary border border-amber/30 p-3 md:p-4 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 md:gap-3 text-amber hover:scale-105 transition-all group"
         >
-          <span className="text-2xl group-hover:rotate-12 transition-transform">🕒</span>
-          <span className="uppercase tracking-[0.2em] text-[10px] font-bold">Pedidos da Noite</span>
+          <span className="text-xl md:text-2xl group-hover:rotate-12 transition-transform">🕒</span>
+          <span className="hidden md:block uppercase tracking-[0.2em] text-[10px] font-bold">Pedidos da Noite</span>
         </button>
       )}
 
@@ -480,17 +484,17 @@ export default function MenuApp() {
       {pendingOrderId && !showOrderTracker && (
         <button
           onClick={() => setShowOrderTracker(true)}
-          className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] bg-card border-2 border-amber/40 py-2.5 px-6 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 text-amber hover:scale-105 transition-all animate-fade-in"
+          className="fixed bottom-24 right-4 md:right-8 z-[60] bg-card border-2 border-amber/40 py-2.5 px-5 md:py-3 md:px-6 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 text-amber hover:scale-105 transition-all animate-fade-in"
           style={{ animation: 'pulse 2s infinite, fadeInUp 0.3s ease-out' }}
         >
           <span className="text-xl">📋</span>
-          <span className="uppercase tracking-widest text-[11px] font-bold">Acompanhar</span>
+          <span className="uppercase tracking-widest text-[10px] md:text-[11px] font-bold">Acompanhar</span>
         </button>
       )}
 
       {/* Order Tracker Popup */}
       {showOrderTracker && pendingOrderId && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[70] w-[320px] max-w-[90vw] bg-secondary border border-amber/30 rounded-2xl shadow-[0_16px_64px_rgba(0,0,0,0.8)] animate-fade-in overflow-hidden">
+        <div className="fixed bottom-24 right-4 md:right-8 z-[70] w-[320px] max-w-[90vw] bg-secondary border border-amber/30 rounded-2xl shadow-[0_16px_64px_rgba(0,0,0,0.8)] animate-fade-in overflow-hidden">
           <div className="bg-card p-3 border-b border-amber/20 flex justify-between items-center">
             <h4 className="font-display text-base text-cream italic flex items-center gap-2">
               <span className="text-amber">📋</span> Acompanhamento
