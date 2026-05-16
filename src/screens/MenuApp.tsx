@@ -624,8 +624,7 @@ const ItemCard: React.FC<{ item: MenuItem; index: number }> = ({ item, index }) 
               </span>
             ))}
           </div>
-          <h3 className="font-bold text-lg leading-tight mb-1">{item.name}</h3>
-          <p className="text-cream-dim text-sm line-clamp-2 leading-relaxed">{item.description}</p>
+          <p className="text-cream-dim text-sm line-clamp-2 leading-relaxed mt-2">{item.description}</p>
         </div>
         
         <div className="flex flex-wrap justify-between items-end mt-auto pt-4 pb-1">
