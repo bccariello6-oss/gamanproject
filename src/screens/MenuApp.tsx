@@ -302,7 +302,7 @@ export default function MenuApp() {
   return (
     <div className="flex min-h-screen bg-primary">
       {/* SIDEBAR */}
-      <aside className="hidden md:flex w-64 fixed h-screen flex-col bg-secondary border-r border-amber-dim/20 pt-8 pb-8 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.5)] overflow-hidden">
+      <aside className="hidden md:flex w-72 fixed h-screen flex-col bg-secondary border-r border-amber-dim/20 pt-8 pb-8 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.5)] overflow-hidden">
         <div className="px-8 mb-8 flex flex-col items-start gap-1 shrink-0 relative w-full">
           <button 
             onClick={() => {
@@ -317,23 +317,23 @@ export default function MenuApp() {
           <h2 className="font-display text-crimson text-3xl tracking-widest uppercase">Gaman</h2>
           <span className="text-[10px] uppercase tracking-[0.3em] font-sans text-amber font-bold">Sushi Lounge</span>
         </div>
-        <nav className="relative flex-1 flex flex-col justify-start overflow-y-auto no-scrollbar pb-4 gap-1.5">
+        <nav className="relative flex-1 flex flex-col justify-start overflow-y-auto no-scrollbar pb-4 gap-2">
           {MENU_DATA.categories.map(cat => (
             <button
               key={cat.id}
               onClick={() => scrollToCategory(cat.id)}
-              className={`w-full text-left px-8 py-1.5 flex flex-col transition-colors relative ${
+              className={`w-full text-left px-8 py-3 flex flex-col transition-colors relative ${
                 activeCategory === cat.id ? 'text-cream' : 'text-cream-dim hover:text-cream/80'
               }`}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-lg opacity-60 font-display">{cat.kanji}</span>
-                <span className="uppercase tracking-[0.1em] text-xs font-medium">{cat.label}</span>
+              <div className="flex items-center gap-4 whitespace-nowrap">
+                <span className="text-2xl opacity-60 font-display">{cat.kanji}</span>
+                <span className="uppercase tracking-[0.15em] text-sm font-bold">{cat.label}</span>
               </div>
               
               {/* Active Indication Line */}
               {activeCategory === cat.id && (
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-crimson shadow-[0_0_8px_rgba(139,26,26,0.8)] transition-all duration-300" />
+                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-crimson shadow-[0_0_8px_rgba(139,26,26,0.8)] transition-all duration-300" />
               )}
             </button>
           ))}
@@ -375,7 +375,7 @@ export default function MenuApp() {
       </div>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 md:ml-64 p-4 md:p-6 pt-32 md:pt-12 pb-80 md:pb-64">
+      <main className="flex-1 md:ml-72 p-4 md:p-6 pt-32 md:pt-12 pb-80 md:pb-64">
         {MENU_DATA.categories.map(category => {
           const catItems = MENU_DATA.items.filter(i => i.category === category.id);
           if (catItems.length === 0) return null;
@@ -480,7 +480,7 @@ export default function MenuApp() {
       {!showHistory && lastOrder.length > 0 && (
         <button 
           onClick={() => setShowHistory(true)}
-          className="fixed bottom-24 left-4 md:left-8 z-30 bg-secondary border border-amber/30 p-3 md:p-4 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 md:gap-3 text-amber hover:scale-105 transition-all group"
+          className="fixed bottom-36 left-4 md:left-8 z-30 bg-secondary border border-amber/30 p-3 md:p-4 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 md:gap-3 text-amber hover:scale-105 transition-all group"
         >
           <span className="text-xl md:text-2xl group-hover:rotate-12 transition-transform">🕒</span>
           <span className="hidden md:block uppercase tracking-[0.2em] text-[10px] font-bold">Pedidos da Noite</span>
