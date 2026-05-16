@@ -2,338 +2,93 @@ import { MenuData } from '../types';
 
 export const MENU_DATA: MenuData = {
   categories: [
-    { id: "entradas",   label: "Entradas",          kanji: "前菜" },
-    { id: "sushi",      label: "Sushi",              kanji: "寿司" },
-    { id: "sashimi",    label: "Sashimi",            kanji: "刺身" },
-    { id: "gunkans",    label: "Gunkans",            kanji: "軍艦" },
-    { id: "makimonos",  label: "Makimonos",          kanji: "巻物" },
-    { id: "harumakis",  label: "Harumakis",          kanji: "春巻き" },
-    { id: "temakis",    label: "Temakis",            kanji: "手巻き" },
-    { id: "robatas",    label: "Robatas",            kanji: "炉端" },
-    { id: "tempuras",   label: "Tempurás",           kanji: "天ぷら" },
-    { id: "especiais",  label: "Especiais do Chef",  kanji: "特製" },
-    { id: "sobremesas", label: "Sobremesas",         kanji: "甘味" }
+    { id: "entradas", label: "Entradas", kanji: "前菜" },
+    { id: "sashimis", label: "Sashimis", kanji: "刺身" },
+    { id: "sushi", label: "Sushi", kanji: "寿司" },
+    { id: "makimonos", label: "Makimonos", kanji: "巻物" },
+    { id: "gunkans", label: "Gunkans", kanji: "軍艦" },
+    { id: "cozinha_quente", label: "Cozinha Quente", kanji: "温かい料理" },
+    { id: "bebidas", label: "Bebidas", kanji: "飲み物" }
   ],
 
   items: [
     // ENTRADAS
-    {
-      id: "e01", category: "entradas",
-      name: "Carpaccio de Salmão",
-      description: "Finos cortes de salmão fresco ao molho ponzu do chef com crispy de alho poró.",
-      composition: ["Salmão fresco", "Molho ponzu artesanal", "Crispy de alho poró", "Azeite trufado"],
-      price: 42.00, serves: "1 pessoa", units: null,
-      tags: ["chef", "sem glúten"],
-      image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80"
-    },
-    {
-      id: "e02", category: "entradas",
-      name: "Sunomono",
-      description: "Salada de pepino japonês no molho agridoce com gergelim torrado.",
-      composition: ["Pepino japonês", "Vinagre de arroz", "Gergelim torrado", "Missô"],
-      price: 26.00, serves: "1 pessoa", units: null,
-      tags: ["vegano", "sem glúten"],
-      image: "https://images.unsplash.com/photo-1648508596927-27768a5cf0a4?w=600&q=80"
-    },
-    {
-      id: "e03", category: "entradas",
-      name: "Ceviche de Peixe Branco",
-      description: "Cubos de peixe branco curado no limão com especiarias da casa.",
-      composition: ["Peixe branco", "Limão siciliano", "Coentro", "Pimenta dedo-de-moça"],
-      price: 38.00, serves: "1 pessoa", units: null,
-      tags: ["sem glúten", "fresco"],
-      image: "https://images.unsplash.com/photo-1535400255456-984e7a4e3d8f?w=600&q=80"
-    },
+    { id: "e01", category: "entradas", name: "Sunomono", description: "Salada de pepino japonês no molho agridoce com gergelim torrado.", composition: ["Pepino japonês", "Vinagre de arroz", "Gergelim torrado"], price: 0, serves: "1 pessoa", units: null, tags: ["vegano", "sem glúten"], image: "/images/sunomono.jpg" },
+    { id: "e02", category: "entradas", name: "Edamame", description: "Grãos de soja verde cozidos no vapor com um toque de flor de sal.", composition: ["Soja verde", "Flor de sal"], price: 0, serves: "1 pessoa", units: null, tags: ["vegano"], image: "/images/edamame.jpg" },
+    { id: "e03", category: "entradas", name: "Carpaccio de Salmão", description: "Finos cortes de salmão fresco ao molho ponzu do chef com crispy de alho poró.", composition: ["Salmão", "Molho ponzu", "Crispy de alho poró"], price: 0, serves: "1 pessoa", units: null, tags: ["chef"], image: "/images/carpaccio-de-salmao.jpg" },
+    { id: "e04", category: "entradas", name: "Tartar de salmão molho ponzu", description: "Salmão fresco batido com temperos da casa e molho ponzu refrescante.", composition: ["Salmão", "Molho ponzu", "Cebolinha"], price: 0, serves: "1 pessoa", units: null, tags: [], image: "/images/tartar-de-salmao-molho-ponzu.jpg" },
+    { id: "e05", category: "entradas", name: "Tartar de salmão molho kimut", description: "Salmão batido com toque picante do molho kimut.", composition: ["Salmão", "Molho kimut", "Gergelim"], price: 0, serves: "1 pessoa", units: null, tags: ["picante"], image: "/images/tartar-de-salmao-molho-kimut.jpg" },
+    { id: "e06", category: "entradas", name: "Ceviche peixe branco", description: "Cubos de peixe branco curado no limão com especiarias da casa e cebola roxa.", composition: ["Peixe branco", "Limão", "Cebola roxa", "Pimenta dedo-de-moça"], price: 0, serves: "1 pessoa", units: null, tags: ["fresco"], image: "/images/ceviche-peixe-branco.jpg" },
+
+    // SASHIMIS
+    { id: "sa01", category: "sashimis", name: "Salmão", description: "Cortes premium de salmão fresco.", composition: ["Salmão atlântico"], price: 0, serves: null, units: "Cortes", tags: ["fresco"], image: "/images/salmao.jpg" },
+    { id: "sa02", category: "sashimis", name: "Salmão zuke", description: "Sashimi de salmão levemente marinado em molho especial da casa.", composition: ["Salmão", "Molho zuke"], price: 0, serves: null, units: "Cortes", tags: ["chef"], image: "/images/salmao-zuke.jpg" },
+    { id: "sa03", category: "sashimis", name: "Peixe branco", description: "Cortes finos e delicados de peixe branco da estação.", composition: ["Peixe branco"], price: 0, serves: null, units: "Cortes", tags: ["leve"], image: "/images/peixe-branco.jpg" },
+    { id: "sa04", category: "sashimis", name: "Atum", description: "Cortes frescos de atum com textura delicada e sabor profundo.", composition: ["Atum"], price: 0, serves: null, units: "Cortes", tags: ["premium"], image: "/images/atum.jpg" },
+    { id: "sa05", category: "sashimis", name: "Haddock", description: "Cortes de haddock defumado, sabor marcante e sofisticado.", composition: ["Haddock defumado"], price: 0, serves: null, units: "Cortes", tags: ["premium"], image: "/images/haddock.jpg" },
+    { id: "sa06", category: "sashimis", name: "Polvo", description: "Fatias de polvo cozido no ponto perfeito.", composition: ["Polvo"], price: 0, serves: null, units: "Cortes", tags: [], image: "/images/polvo.jpg" },
+    { id: "sa07", category: "sashimis", name: "Sashimi recheado", description: "Salmão envolvendo um recheio surpresa do chef.", composition: ["Salmão", "Recheio do chef"], price: 0, serves: null, units: "Cortes", tags: ["exclusivo"], image: "/images/sashimi-recheado.jpg" },
+    { id: "sa08", category: "sashimis", name: "Salmão massaricado com maracujá", description: "Salmão selado ao fogo com molho de maracujá agridoce.", composition: ["Salmão", "Molho de maracujá"], price: 0, serves: null, units: "Cortes", tags: ["popular"], image: "/images/salmao-massaricado-com-maracuja.jpg" },
+    { id: "sa09", category: "sashimis", name: "Salmão trufado com raspa de limão siciliano e flor de sal", description: "Cortes de salmão com azeite trufado, toque cítrico e flor de sal.", composition: ["Salmão", "Azeite trufado", "Limão siciliano", "Flor de sal"], price: 0, serves: null, units: "Cortes", tags: ["chef", "premium"], image: "/images/salmao-trufado.jpg" },
 
     // SUSHI
-    {
-      id: "s01", category: "sushi",
-      name: "Sushi Salmão",
-      description: "Nigiri clássico com corte nobre de salmão fresco sobre arroz temperado.",
-      composition: ["Salmão fresco", "Arroz japonês", "Wasabi", "Shoyu"],
-      price: 9.00, serves: null, units: "1 unid.",
-      tags: [],
-      image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80"
-    },
-    {
-      id: "s02", category: "sushi",
-      name: "Sushi Salmão Maçaricado",
-      description: "Nigiri com salmão flambado na hora, cream cheese e cebolinha.",
-      composition: ["Salmão", "Cream cheese", "Cebolinha", "Arroz japonês"],
-      price: 11.00, serves: null, units: "1 unid.",
-      tags: ["popular"],
-      image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80"
-    },
-    {
-      id: "s03", category: "sushi",
-      name: "Sushi Atum",
-      description: "Nigiri com atum bluefin importado, textura delicada e sabor profundo.",
-      composition: ["Atum bluefin", "Arroz japonês", "Wasabi"],
-      price: 12.00, serves: null, units: "1 unid.",
-      tags: ["premium"],
-      image: "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=600&q=80"
-    },
+    { id: "su01", category: "sushi", name: "Salmão", description: "Nigiri clássico com corte nobre de salmão fresco sobre arroz temperado.", composition: ["Salmão", "Arroz japonês"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/sushi-salmao.jpg" },
+    { id: "su02", category: "sushi", name: "Salmão skin", description: "Nigiri com pele de salmão grelhada e crocante com molho tarê.", composition: ["Pele de salmão", "Molho tarê", "Arroz"], price: 0, serves: null, units: "Unid.", tags: ["crocante"], image: "/images/salmao-skin.jpg" },
+    { id: "su03", category: "sushi", name: "Atum com queijo brie e mel", description: "Combinação sofisticada de atum, queijo brie maçaricado e um fio de mel.", composition: ["Atum", "Queijo brie", "Mel"], price: 0, serves: null, units: "Unid.", tags: ["chef"], image: "/images/atum-com-queijo-brie-e-mel.jpg" },
+    { id: "su04", category: "sushi", name: "Camarão", description: "Nigiri delicado com camarão cozido sobre arroz de sushi.", composition: ["Camarão cozido", "Arroz japonês"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/camarao.jpg" },
 
-    // SASHIMI
-    {
-      id: "sa01", category: "sashimi",
-      name: "Sashimi de Salmão",
-      description: "5 cortes de salmão atlântico premium, servidos com gengibre e wasabi.",
-      composition: ["Salmão atlântico", "Gengibre conserva", "Wasabi", "Shoyu premium"],
-      price: 36.00, serves: null, units: "5 cortes",
-      tags: ["sem glúten"],
-      image: "https://images.unsplash.com/photo-1553621042-f6e147245754?w=600&q=80"
-    },
-    {
-      id: "sa02", category: "sashimi",
-      name: "Sashimi de Peixe Branco Toast Trufado",
-      description: "5 cortes de peixe branco maçaricados no azeite trufado — especialidade da casa.",
-      composition: ["Peixe branco", "Azeite trufado", "Flor de sal", "Limão siciliano"],
-      price: 44.00, serves: null, units: "5 cortes",
-      tags: ["chef", "premium"],
-      image: "https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=600&q=80"
-    },
-    {
-      id: "sa03", category: "sashimi",
-      name: "Sashimi de Atum",
-      description: "5 cortes de atum fresco, servidos com shoyu especial.",
-      composition: ["Atum fresco", "Shoyu", "Wasabi", "Gengibre"],
-      price: 48.00, serves: null, units: "5 cortes",
-      tags: ["premium"],
-      image: "https://images.unsplash.com/photo-1534482421-64566f976cfa?w=600&q=80"
-    },
+    // MAKIMONOS
+    { id: "ma01", category: "makimonos", name: "Califórnia (uramaki)", description: "O clássico rolinho invertido com kani, pepino e manga.", composition: ["Kani", "Pepino", "Manga", "Gergelim"], price: 0, serves: null, units: "Unid.", tags: ["popular"], image: "/images/california-uramaki.jpg" },
+    { id: "ma02", category: "makimonos", name: "Filadélfia roll (uramaki)", description: "Uramaki recheado com salmão fresco e cream cheese.", composition: ["Salmão", "Cream cheese", "Gergelim"], price: 0, serves: null, units: "Unid.", tags: ["popular"], image: "/images/filadelfia-roll-uramaki.jpg" },
+    { id: "ma03", category: "makimonos", name: "Filadélfia spice", description: "A versão apimentada do clássico Filadélfia.", composition: ["Salmão", "Cream cheese", "Pimenta", "Cebolinha"], price: 0, serves: null, units: "Unid.", tags: ["picante"], image: "/images/filadelfia-spice.jpg" },
+    { id: "ma04", category: "makimonos", name: "Skin especial", description: "Rolinho com pele de salmão crocante e molho especial.", composition: ["Salmão skin", "Cream cheese", "Tarê"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/skin-especial.jpg" },
+    { id: "ma05", category: "makimonos", name: "Salmão skin crispy de couve (uramaki)", description: "Inovação crocante com crispy de couve por cima.", composition: ["Salmão skin", "Crispy de couve", "Tarê"], price: 0, serves: null, units: "Unid.", tags: ["crocante"], image: "/images/salmao-skin-crispy-de-couve.jpg" },
+    { id: "ma06", category: "makimonos", name: "Salmão grelhado", description: "Recheado com delicioso salmão grelhado.", composition: ["Salmão grelhado", "Cream cheese"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/salmao-grelhado.jpg" },
+    { id: "ma07", category: "makimonos", name: "Salmão ebi", description: "Salmão envolto com camarão, uma combinação perfeita.", composition: ["Salmão", "Camarão"], price: 0, serves: null, units: "Unid.", tags: ["premium"], image: "/images/salmao-ebi.jpg" },
+    { id: "ma08", category: "makimonos", name: "Mak mix", description: "Mistura especial de peixes selecionados pelo chef.", composition: ["Mix de peixes", "Cebolinha"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/mak-mix.jpg" },
+    { id: "ma09", category: "makimonos", name: "Tuna roll", description: "Rolinho clássico recheado com atum fresco.", composition: ["Atum fresco", "Alga", "Arroz"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/tuna-roll.jpg" },
+    { id: "ma10", category: "makimonos", name: "Batera crispy", description: "Sushi prensado coberto com uma camada super crocante.", composition: ["Salmão batido", "Flocos crocantes"], price: 0, serves: null, units: "Unid.", tags: ["crocante"], image: "/images/batera-crispy.jpg" },
 
     // GUNKANS
-    {
-      id: "g01", category: "gunkans",
-      name: "Gunkan Gaman",
-      description: "Carro-chefe da casa. Salmão flambado, cream cheese, geleia de pimenta, queijo coalho crocante e hortelã.",
-      composition: ["Salmão flambado", "Cream cheese", "Geleia de pimenta", "Queijo coalho", "Hortelã", "Alga nori"],
-      price: 54.00, serves: null, units: "5 unid.",
-      tags: ["chef", "popular", "picante"],
-      image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80"
-    },
-    {
-      id: "g02", category: "gunkans",
-      name: "Gunkan Palmito Roll",
-      description: "Salmão flambado com palmito, cream cheese e molho teriaki.",
-      composition: ["Salmão flambado", "Palmito", "Cream cheese", "Teriaki", "Alga nori"],
-      price: 44.00, serves: null, units: "5 unid.",
-      tags: ["popular"],
-      image: "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=600&q=80"
-    },
-    {
-      id: "g03", category: "gunkans",
-      name: "Gunkan Salmão Maracujá",
-      description: "Salmão flambado com cream cheese e geleia de maracujá — equilíbrio ácido e cremoso.",
-      composition: ["Salmão flambado", "Cream cheese", "Geleia de maracujá", "Alga nori"],
-      price: 44.00, serves: null, units: "5 unid.",
-      tags: [],
-      image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80"
-    },
+    { id: "gu01", category: "gunkans", name: "Salmão light", description: "Salmão envolvendo arroz, sem cream cheese, super leve.", composition: ["Salmão fresco", "Arroz"], price: 0, serves: null, units: "Unid.", tags: ["light"], image: "/images/salmao-light.jpg" },
+    { id: "gu02", category: "gunkans", name: "Salmão light grelhado", description: "A versão maçaricada do salmão light.", composition: ["Salmão maçaricado"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/salmao-light-grelhado.jpg" },
+    { id: "gu03", category: "gunkans", name: "Salmão maracujá", description: "Gunkan de salmão com a acidez perfeita da geleia de maracujá.", composition: ["Salmão", "Geleia de maracujá", "Cream cheese"], price: 0, serves: null, units: "Unid.", tags: ["popular"], image: "/images/salmao-maracuja.jpg" },
+    { id: "gu04", category: "gunkans", name: "Salmão spice", description: "Gunkan com cobertura de salmão batido apimentado.", composition: ["Salmão", "Pimenta", "Cebolinha"], price: 0, serves: null, units: "Unid.", tags: ["picante"], image: "/images/salmao-spice.jpg" },
+    { id: "gu05", category: "gunkans", name: "Palmito roll", description: "Salmão flambado com palmito e cream cheese.", composition: ["Salmão flambado", "Palmito", "Cream cheese"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/palmito-roll.jpg" },
+    { id: "gu06", category: "gunkans", name: "Cebola crispy", description: "Cobertura de cebola crocante sobre o gunkan de salmão.", composition: ["Salmão", "Cebola crispy", "Cream cheese"], price: 0, serves: null, units: "Unid.", tags: ["crocante"], image: "/images/cebola-crispy.jpg" },
+    { id: "gu07", category: "gunkans", name: "Couve crispy", description: "Couve frita bem sequinha e crocante finalizando o gunkan.", composition: ["Salmão", "Couve crispy"], price: 0, serves: null, units: "Unid.", tags: ["crocante"], image: "/images/couve-crispy.jpg" },
+    { id: "gu08", category: "gunkans", name: "Alho poró crispy", description: "Crispy de alho poró trazendo um sabor inconfundível.", composition: ["Salmão", "Alho poró crispy"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/alho-poro-crispy.jpg" },
+    { id: "gu09", category: "gunkans", name: "Haddock com batata crispy", description: "Gunkan de haddock defumado com palha de batata doce.", composition: ["Haddock", "Batata crispy"], price: 0, serves: null, units: "Unid.", tags: ["premium", "crocante"], image: "/images/haddock-com-batata-crispy.jpg" },
+    { id: "gu10", category: "gunkans", name: "Gulkan ebi", description: "Gunkan especial com camarão no topo.", composition: ["Salmão", "Camarão", "Cream cheese"], price: 0, serves: null, units: "Unid.", tags: ["chef"], image: "/images/gulkan-ebi.jpg" },
 
-    // HARUMAKIS
-    {
-      id: "h01", category: "harumakis",
-      name: "Harumaki de Camarão",
-      description: "Massa artesanal crocante recheada com camarão temperado.",
-      composition: ["Massa artesanal", "Camarão", "Temperos da casa"],
-      price: 28.00, serves: null, units: "2 unid.",
-      tags: [],
-      image: "https://images.unsplash.com/photo-1617196034738-26c5f7c977ce?w=600&q=80"
-    },
-    {
-      id: "h02", category: "harumakis",
-      name: "Harumaki de Frango",
-      description: "Massa crocante recheada com frango desfiado ao molho da casa.",
-      composition: ["Massa artesanal", "Frango desfiado", "Molho especial"],
-      price: 24.00, serves: null, units: "2 unid.",
-      tags: [],
-      image: "https://images.unsplash.com/photo-1607532941433-304659e8198a?w=600&q=80"
-    },
-
-    // TEMAKIS
-    {
-      id: "t01", category: "temakis",
-      name: "Temaki Salmão",
-      description: "Cone de alga nori recheado com salmão, cream cheese e cebolinha.",
-      composition: ["Alga nori", "Salmão", "Cream cheese", "Cebolinha", "Arroz japonês"],
-      price: 28.00, serves: "1 pessoa", units: null,
-      tags: ["popular"],
-      image: "https://images.unsplash.com/photo-1617196035154-a9e9d5ab9e76?w=600&q=80"
-    },
-    {
-      id: "t02", category: "temakis",
-      name: "Temaki Philadelphia",
-      description: "Cone com salmão, cream cheese e pepino japonês.",
-      composition: ["Salmão", "Cream cheese", "Pepino japonês", "Gergelim", "Alga nori"],
-      price: 26.00, serves: "1 pessoa", units: null,
-      tags: [],
-      image: "https://images.unsplash.com/photo-1617196035154-a9e9d5ab9e76?w=600&q=80"
-    },
-
-    // ROBATAS
-    {
-      id: "r01", category: "robatas",
-      name: "Robata de Camarão — 10 unid.",
-      description: "Espetinhos de camarão grelhados na brasa com molho especial.",
-      composition: ["Camarão", "Molho teriaki", "Limão", "Ervas finas"],
-      price: 52.00, serves: "1-2 pessoas", units: "10 unid.",
-      tags: ["sem glúten"],
-      image: "https://images.unsplash.com/photo-1534482421-64566f976cfa?w=600&q=80"
-    },
-    {
-      id: "r02", category: "robatas",
-      name: "Robata de Lula — 10 unid.",
-      description: "Espetinhos de lula grelhados com toque de gengibre e limão.",
-      composition: ["Lula", "Gengibre", "Limão", "Molho ponzu"],
-      price: 48.00, serves: "1-2 pessoas", units: "10 unid.",
-      tags: ["sem glúten"],
-      image: "https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=600&q=80"
-    },
-
-    // TEMPURÁS
-    {
-      id: "tp01", category: "tempuras",
-      name: "Tempurá de Peixe Branco — 10 unid.",
-      description: "Peixe branco empanado em massa leve e crocante, frito na hora.",
-      composition: ["Peixe branco", "Massa tempurá", "Azeite de gergelim", "Shoyu tentsuyu"],
-      price: 46.00, serves: "1-2 pessoas", units: "10 unid.",
-      tags: [],
-      image: "https://images.unsplash.com/photo-1607532941433-304659e8198a?w=600&q=80"
-    },
-    {
-      id: "tp02", category: "tempuras",
-      name: "Tempurá de Camarão — 10 unid.",
-      description: "Camarão em massa tempurá crocante com molho tentsuyu.",
-      composition: ["Camarão", "Massa tempurá", "Molho tentsuyu", "Daikon ralado"],
-      price: 52.00, serves: "1-2 pessoas", units: "10 unid.",
-      tags: ["popular"],
-      image: "https://images.unsplash.com/photo-1617196035154-a9e9d5ab9e76?w=600&q=80"
-    },
-
-    // ESPECIAIS DO CHEF
-    {
-      id: "ec01", category: "especiais",
-      name: "Sashimi Atum Flambado",
-      description: "Cortes de atum maçaricados na hora com toque de azeite trufado — criação exclusiva.",
-      composition: ["Atum fresco", "Azeite trufado", "Flor de sal", "Microverdes"],
-      price: 58.00, serves: "1 pessoa", units: "5 cortes",
-      tags: ["chef", "premium", "exclusivo"],
-      image: "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=600&q=80"
-    },
-    {
-      id: "ec02", category: "especiais",
-      name: "Bolinho de Salmão",
-      description: "Croquete de salmão com cream cheese derretendo por dentro, crosta dourada.",
-      composition: ["Salmão", "Cream cheese", "Cebola roxa", "Ervas", "Panko"],
-      price: 36.00, serves: null, units: "4 unid.",
-      tags: ["chef", "popular"],
-      image: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80"
-    },
-    {
-      id: "ec03", category: "especiais",
-      name: "Wonton de Frango com Catupiry",
-      description: "Massa wonton frita recheada com frango desfiado e catupiry.",
-      composition: ["Massa wonton", "Frango desfiado", "Catupiry", "Cebolinha"],
-      price: 32.00, serves: null, units: "4 unid.",
-      tags: [],
-      image: "https://images.unsplash.com/photo-1607532941433-304659e8198a?w=600&q=80"
-    },
-
-    // COMBINADOS
-    {
-      id: "c01", category: "combinados",
-      name: "Combinado Iniciante — 30 Peças",
-      description: "Perfeito para explorar o cardápio Gaman pela primeira vez.",
-      composition: [
-        "2 Bolinhos de Salmão", "4 Wonton de Frango c/ Catupiry",
-        "4 Hot Filadélfia", "2 Harumakis de Camarão",
-        "5 Tempurá de Peixe Branco", "5 Robata de Camarão",
-        "4 Sashimi Salmão Toast Trufado", "2 Gunkans Salmão Alho Poró",
-        "2 Palmitos Roll"
-      ],
-      price: 168.00, serves: "2-3 pessoas", units: "30 peças",
-      tags: ["popular", "melhor valor"],
-      image: "https://images.unsplash.com/photo-1553621042-f6e147245754?w=600&q=80"
-    },
-    {
-      id: "c02", category: "combinados",
-      name: "Combinado Light S/ Arroz — 22 Peças",
-      description: "Para quem prefere leveza — sem arroz, sem abrir mão do sabor.",
-      composition: [
-        "1 Sunomono", "1 Ceviche de Peixe Branco",
-        "2 Sashimi de Salmão", "2 Sashimi Salmão Flambado",
-        "2 Sashimi de Atum", "4 Robata de Camarão",
-        "4 Robata de Lula", "2 Gunkans Palmito Roll",
-        "4 Hots Especial"
-      ],
-      price: 142.00, serves: "1-2 pessoas", units: "22 peças",
-      tags: ["sem glúten", "sem arroz"],
-      image: "https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=600&q=80"
-    },
-    {
-      id: "c03", category: "combinados",
-      name: "Combinado Sashimi Gaman — 18 Peças",
-      description: "O melhor do mar em 18 cortes premium selecionados pelo chef.",
-      composition: [
-        "4 Sashimi Salmão", "2 Sashimi Peixe Branco",
-        "2 Sashimi Atum", "2 Sashimi Haddock",
-        "2 Sashimi Polvo", "2 Sashimi Camarão",
-        "4 Sashimi Salmão Trufado"
-      ],
-      price: 188.00, serves: "1-2 pessoas", units: "18 peças",
-      tags: ["premium", "chef", "sem glúten"],
-      image: "https://images.unsplash.com/photo-1534482421-64566f976cfa?w=600&q=80"
-    },
-
-    // SOBREMESAS
-    {
-      id: "sb01", category: "sobremesas",
-      name: "Mochi de Morango",
-      description: "Bolinho japonês de arroz com recheio de morango e creme.",
-      composition: ["Massa mochi", "Morango", "Creme de baunilha"],
-      price: 22.00, serves: null, units: "2 unid.",
-      tags: [],
-      image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&q=80"
-    },
-    {
-      id: "sb02", category: "sobremesas",
-      name: "Temaki de Nutella",
-      description: "Cone crocante com Nutella, morango e granola — o favorito dos clientes.",
-      composition: ["Massa crocante", "Nutella", "Morango", "Granola"],
-      price: 28.00, serves: "1 pessoa", units: null,
-      tags: ["popular", "vegetariano"],
-      image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&q=80"
-    },
+    // COZINHA QUENTE
+    { id: "cq01", category: "cozinha_quente", name: "Hot Filadélfia", description: "O tradicional sushi empanado e frito com salmão e cream cheese.", composition: ["Salmão", "Cream cheese", "Massa panko", "Tarê"], price: 0, serves: null, units: "Unid.", tags: ["popular", "quente"], image: "/images/hot-filadelfia.jpg" },
+    { id: "cq02", category: "cozinha_quente", name: "Nem tão hot", description: "Uma versão mais leve do tradicional hot.", composition: ["Salmão", "Cream cheese", "Empanamento leve"], price: 0, serves: null, units: "Unid.", tags: [], image: "/images/nem-tao-hot.jpg" },
+    { id: "cq03", category: "cozinha_quente", name: "Camarão", description: "Camarões empanados e fritos, crocantes por fora e macios por dentro.", composition: ["Camarão", "Farinha panko"], price: 0, serves: "1 pessoa", units: null, tags: ["quente"], image: "/images/camarao-quente.jpg" },
+    { id: "cq04", category: "cozinha_quente", name: "Frango catupiry", description: "Pedaços suculentos de frango com verdadeiro catupiry.", composition: ["Frango", "Catupiry"], price: 0, serves: "1 pessoa", units: null, tags: ["quente"], image: "/images/frango-catupiry.jpg" },
+    { id: "cq05", category: "cozinha_quente", name: "Legumes", description: "Mix de legumes selecionados salteados na wok.", composition: ["Brócolis", "Cenoura", "Acelga", "Shoyu"], price: 0, serves: "1 pessoa", units: null, tags: ["vegetariano"], image: "/images/legumes.jpg" },
+    { id: "cq06", category: "cozinha_quente", name: "Wonton de frango", description: "Trouxinhas de massa fina fritas com recheio de frango temperado.", composition: ["Massa wonton", "Frango temperado"], price: 0, serves: null, units: "Unid.", tags: ["crocante"], image: "/images/wonton-de-frango.jpg" },
+    { id: "cq07", category: "cozinha_quente", name: "Robata de camarão", description: "Espetinho de camarão grelhado na brasa com molho especial.", composition: ["Camarão", "Molho teriaki"], price: 0, serves: null, units: "Espeto", tags: ["grelhado"], image: "/images/robata-de-camarao.jpg" },
+    { id: "cq08", category: "cozinha_quente", name: "Robata de Lula", description: "Espetinho de lula macia grelhada perfeitamente.", composition: ["Lula", "Molho especial"], price: 0, serves: null, units: "Espeto", tags: ["grelhado"], image: "/images/robata-de-lula.jpg" },
+    { id: "cq09", category: "cozinha_quente", name: "Robata carne", description: "Espetinho de carne bovina nobre e suculenta.", composition: ["Carne bovina", "Molho"], price: 0, serves: null, units: "Espeto", tags: ["grelhado"], image: "/images/robata-carne.jpg" },
+    { id: "cq10", category: "cozinha_quente", name: "Robata de frango", description: "Espetinho de frango grelhado com tempero oriental.", composition: ["Frango", "Molho teriaki"], price: 0, serves: null, units: "Espeto", tags: ["grelhado"], image: "/images/robata-de-frango.jpg" },
+    { id: "cq11", category: "cozinha_quente", name: "Harumaki de camarão", description: "Massa crocante recheada com camarão.", composition: ["Massa harumaki", "Camarão"], price: 0, serves: null, units: "Unid.", tags: ["crocante"], image: "/images/harumaki-de-camarao.jpg" },
+    { id: "cq12", category: "cozinha_quente", name: "Harumaki de frango e catupiry", description: "Rolinho primavera recheado de frango cremoso.", composition: ["Massa harumaki", "Frango", "Catupiry"], price: 0, serves: null, units: "Unid.", tags: ["popular"], image: "/images/harumaki-de-frango-e-catupiry.jpg" },
+    { id: "cq13", category: "cozinha_quente", name: "Harumaki de legumes", description: "Rolinho primavera tradicional com vegetais.", composition: ["Massa harumaki", "Repolho", "Cenoura"], price: 0, serves: null, units: "Unid.", tags: ["vegetariano"], image: "/images/harumaki-de-legumes.jpg" },
+    { id: "cq14", category: "cozinha_quente", name: "Yakisoba de frango", description: "Macarrão oriental salteado com legumes e frango.", composition: ["Macarrão yakisoba", "Frango", "Legumes", "Molho especial"], price: 0, serves: "1 pessoa", units: null, tags: ["quente"], image: "/images/yakisoba-de-frango.jpg" },
+    { id: "cq15", category: "cozinha_quente", name: "Yakisoba de carne", description: "Macarrão oriental salteado com legumes e tiras de carne.", composition: ["Macarrão yakisoba", "Carne", "Legumes", "Molho especial"], price: 0, serves: "1 pessoa", units: null, tags: ["quente"], image: "/images/yakisoba-de-carne.jpg" },
+    { id: "cq16", category: "cozinha_quente", name: "Tempurá de camarão", description: "Camarões empanados em massa super leve e fritos.", composition: ["Camarão", "Massa tempurá"], price: 0, serves: "1 pessoa", units: null, tags: ["crocante"], image: "/images/tempura-de-camarao.jpg" },
+    { id: "cq17", category: "cozinha_quente", name: "Tempurá de Lula", description: "Anéis de lula empanados na massa tempurá.", composition: ["Lula", "Massa tempurá"], price: 0, serves: "1 pessoa", units: null, tags: ["crocante"], image: "/images/tempura-de-lula.jpg" },
+    { id: "cq18", category: "cozinha_quente", name: "Tempurá de peixe branco", description: "Tiras de peixe branco empanadas de forma leve e crocante.", composition: ["Peixe branco", "Massa tempurá"], price: 0, serves: "1 pessoa", units: null, tags: [], image: "/images/tempura-de-peixe-branco.jpg" },
+    { id: "cq19", category: "cozinha_quente", name: "Guiosa suíno", description: "Pastéis orientais grelhados e cozidos no vapor com recheio suíno.", composition: ["Massa fina", "Carne suína", "Legumes"], price: 0, serves: null, units: "Unid.", tags: ["quente"], image: "/images/guiosa-suino.jpg" },
+    { id: "cq20", category: "cozinha_quente", name: "Bolinha de salmão", description: "Croquetes de salmão cremosos por dentro e crocantes por fora.", composition: ["Salmão", "Cream cheese", "Panko"], price: 0, serves: null, units: "Unid.", tags: ["popular"], image: "/images/bolinha-de-salmao.jpg" },
+    { id: "cq21", category: "cozinha_quente", name: "Mix de cogumelos", description: "Shimeji e shitake puxados na manteiga e shoyu.", composition: ["Shimeji", "Shitake", "Manteiga", "Shoyu", "Cebolinha"], price: 0, serves: "1 pessoa", units: null, tags: ["vegetariano"], image: "/images/mix-de-cogumelos.jpg" },
 
     // BEBIDAS
-    {
-      id: "b01", category: "bebidas",
-      name: "Sake Tradicional",
-      description: "Saquê importado do Japão servido frio ou quente.",
-      composition: ["Arroz fermentado", "Água pura japonesa"],
-      price: 38.00, serves: "1 pessoa", units: "300ml",
-      tags: ["alcoólico"],
-      image: "https://images.unsplash.com/photo-1577003833619-76bbd7f82948?w=600&q=80"
-    },
-    {
-      id: "b02", category: "bebidas",
-      name: "Chá Verde Quente",
-      description: "Chá sencha japonês premium servido na temperatura ideal.",
-      composition: ["Folhas sencha japonesas", "Água filtrada a 80°C"],
-      price: 14.00, serves: "1 pessoa", units: "300ml",
-      tags: ["sem álcool", "quente"],
-      image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80"
-    },
-    {
-      id: "b03", category: "bebidas",
-      name: "Água com Gás",
-      description: "Água mineral com gás gelada.",
-      composition: ["Água mineral"],
-      price: 8.00, serves: "1 pessoa", units: "500ml",
-      tags: [],
-      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80"
-    },
+    { id: "be01", category: "bebidas", name: "Coca Cola Tradicional", description: "Lata 350ml bem gelada.", composition: ["Refrigerante de cola"], price: 0, serves: "1 pessoa", units: "350ml", tags: ["gelada"], image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80" },
+    { id: "be02", category: "bebidas", name: "Coca Cola Zero", description: "Lata 350ml sem açúcar bem gelada.", composition: ["Refrigerante de cola zero"], price: 0, serves: "1 pessoa", units: "350ml", tags: ["gelada", "zero"], image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80" },
+    { id: "be03", category: "bebidas", name: "Ice Tea Pêssego", description: "Chá gelado sabor pêssego.", composition: ["Chá preto", "Pêssego"], price: 0, serves: "1 pessoa", units: "300ml", tags: ["gelada"], image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80" },
+    { id: "be04", category: "bebidas", name: "Água sem Gás", description: "Água mineral natural.", composition: ["Água mineral"], price: 0, serves: "1 pessoa", units: "500ml", tags: ["natural"], image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80" },
+    { id: "be05", category: "bebidas", name: "Água com Gás", description: "Água mineral com gás.", composition: ["Água mineral gaseificada"], price: 0, serves: "1 pessoa", units: "500ml", tags: ["gaseificada"], image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80" }
   ]
 };
