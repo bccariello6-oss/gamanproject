@@ -34,22 +34,30 @@ const ToriiGate = ({ className = "w-5 h-5" }: { className?: string }) => (
   </svg>
 );
 
+let waiterAudioContext: AudioContext | null = null;
+
 async function playWaiterAlert() {
   try {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContextClass) return;
-    const ctx = new AudioContextClass();
-    if (ctx.state === 'suspended') await ctx.resume();
+    if (!waiterAudioContext) {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      waiterAudioContext = new AudioContextClass();
+    }
     
-    // High pitched chime like a hotel bell - distinct from kitchen gong
+    if (waiterAudioContext.state === 'suspended') {
+      await waiterAudioContext.resume();
+    }
+    
+    // High pitched chime like a hotel bell
     const frequencies = [880, 1108.73, 1318.51];
-    const startTime = ctx.currentTime;
+    const startTime = waiterAudioContext.currentTime;
     
     frequencies.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      if (!waiterAudioContext) return;
+      const osc = waiterAudioContext.createOscillator();
+      const gain = waiterAudioContext.createGain();
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(waiterAudioContext.destination);
       osc.type = "sine";
       const noteStartTime = startTime + (i * 0.12);
       osc.frequency.setValueAtTime(freq, noteStartTime);
@@ -88,7 +96,7 @@ export default function MenuApp() {
     sessionStorage.setItem('gaman_category', activeCategory);
   }, [activeCategory]);
   
-  // Persist pending order id and items across reloads
+  // Restore session state on mount
   useEffect(() => {
     const savedPending = sessionStorage.getItem('gaman_pending_order');
     if (savedPending) setPendingOrderId(savedPending);
@@ -247,7 +255,6 @@ export default function MenuApp() {
     }).select();
     
     if (error) {
-      console.error('Supabase error:', error);
       throw error;
     }
     
