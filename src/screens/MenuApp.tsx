@@ -629,22 +629,49 @@ const ItemCard: React.FC<{ item: MenuItem; index: number }> = ({ item, index }) 
         
         <div className="flex flex-wrap justify-between items-end mt-auto pt-4 pb-1">
           <div className="flex gap-2 items-center flex-wrap">
-            <span className="text-xs uppercase tracking-widest text-cream-dim mr-2 font-bold shrink-0">Peças</span>
-            <div className="flex gap-2 flex-wrap">
-              {options.map(opt => (
+            <span className="text-xs uppercase tracking-widest text-cream-dim mr-2 font-bold shrink-0">
+              {item.category === 'bebidas' ? 'Quantidade' : 'Peças'}
+            </span>
+            
+            {item.category === 'bebidas' ? (
+              <div className="flex items-center gap-4 bg-primary/30 rounded-full px-2 py-1 border border-amber-dim/20">
                 <button
-                  key={opt}
-                  onClick={(e) => handleSelect(e, opt)}
-                  className={`w-9 h-9 rounded-full border flex items-center justify-center font-bold font-sans transition-all shrink-0 ${
-                    currentQty === opt 
-                      ? 'bg-crimson border-crimson text-cream shadow-[0_0_12px_rgba(139,26,26,0.6)] scale-105' 
-                      : 'border-amber-dim/50 text-amber hover:bg-amber-dim/20'
-                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (currentQty > 0) dispatch({ type: 'SET_QTY', payload: { item, quantity: currentQty - 1 } });
+                  }}
+                  className="w-8 h-8 rounded-full border border-crimson/40 text-crimson hover:bg-crimson/10 flex items-center justify-center font-bold text-xl transition-colors"
                 >
-                  {opt}
+                  −
                 </button>
-              ))}
-            </div>
+                <span className="text-lg font-bold text-cream min-w-[20px] text-center">{currentQty}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    dispatch({ type: 'SET_QTY', payload: { item, quantity: currentQty + 1 } });
+                  }}
+                  className="w-8 h-8 rounded-full border border-green-500/40 text-green-500 hover:bg-green-500/10 flex items-center justify-center font-bold text-xl transition-colors"
+                >
+                  +
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2 flex-wrap">
+                {options.map(opt => (
+                  <button
+                    key={opt}
+                    onClick={(e) => handleSelect(e, opt)}
+                    className={`w-9 h-9 rounded-full border flex items-center justify-center font-bold font-sans transition-all shrink-0 ${
+                      currentQty === opt 
+                        ? 'bg-crimson border-crimson text-cream shadow-[0_0_12px_rgba(139,26,26,0.6)] scale-105' 
+                        : 'border-amber-dim/50 text-amber hover:bg-amber-dim/20'
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
