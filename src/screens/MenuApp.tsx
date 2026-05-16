@@ -484,7 +484,7 @@ export default function MenuApp() {
       {pendingOrderId && !showOrderTracker && (
         <button
           onClick={() => setShowOrderTracker(true)}
-          className="fixed bottom-24 right-4 md:right-8 z-[60] bg-card border-2 border-amber/40 py-2.5 px-5 md:py-3 md:px-6 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 text-amber hover:scale-105 transition-all animate-fade-in"
+          className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] bg-card border-2 border-amber/40 py-2 px-5 md:py-2.5 md:px-6 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] flex items-center gap-2 text-amber hover:scale-105 transition-all animate-fade-in"
           style={{ animation: 'pulse 2s infinite, fadeInUp 0.3s ease-out' }}
         >
           <span className="text-xl">📋</span>
@@ -494,7 +494,7 @@ export default function MenuApp() {
 
       {/* Order Tracker Popup */}
       {showOrderTracker && pendingOrderId && (
-        <div className="fixed bottom-24 right-4 md:right-8 z-[70] w-[320px] max-w-[90vw] bg-secondary border border-amber/30 rounded-2xl shadow-[0_16px_64px_rgba(0,0,0,0.8)] animate-fade-in overflow-hidden">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[70] w-[320px] max-w-[90vw] bg-secondary border border-amber/30 rounded-2xl shadow-[0_16px_64px_rgba(0,0,0,0.8)] animate-fade-in overflow-hidden">
           <div className="bg-card p-3 border-b border-amber/20 flex justify-between items-center">
             <h4 className="font-display text-base text-cream italic flex items-center gap-2">
               <span className="text-amber">📋</span> Acompanhamento
