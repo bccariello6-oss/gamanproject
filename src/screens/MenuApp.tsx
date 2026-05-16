@@ -302,7 +302,7 @@ export default function MenuApp() {
   return (
     <div className="flex min-h-screen bg-primary">
       {/* SIDEBAR */}
-      <aside className="hidden md:flex w-72 fixed h-screen flex-col bg-secondary border-r border-amber-dim/20 pt-8 pb-8 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.5)] overflow-hidden">
+      <aside className="hidden md:flex w-84 fixed h-screen flex-col bg-secondary border-r border-amber-dim/20 pt-8 pb-8 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.5)] overflow-hidden">
         <div className="px-8 mb-8 flex flex-col items-start gap-1 shrink-0 relative w-full">
           <button 
             onClick={() => {
@@ -326,9 +326,9 @@ export default function MenuApp() {
                 activeCategory === cat.id ? 'text-cream' : 'text-cream-dim hover:text-cream/80'
               }`}
             >
-              <div className="flex items-center gap-4 whitespace-nowrap">
-                <span className="text-2xl opacity-60 font-display">{cat.kanji}</span>
-                <span className="uppercase tracking-[0.15em] text-sm font-bold">{cat.label}</span>
+              <div className="flex items-center gap-3 whitespace-nowrap">
+                <span className="text-xl opacity-60 font-display shrink-0">{cat.kanji}</span>
+                <span className="uppercase tracking-[0.12em] text-sm font-bold">{cat.label}</span>
               </div>
               
               {/* Active Indication Line */}
@@ -375,7 +375,7 @@ export default function MenuApp() {
       </div>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 md:ml-72 p-4 md:p-6 pt-32 md:pt-12 pb-80 md:pb-64">
+      <main className="flex-1 md:ml-84 p-4 md:p-6 pt-32 md:pt-12 pb-80 md:pb-64">
         {MENU_DATA.categories.map(category => {
           const catItems = MENU_DATA.items.filter(i => i.category === category.id);
           if (catItems.length === 0) return null;
