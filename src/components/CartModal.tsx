@@ -104,9 +104,8 @@ export default function CartModal({ onClose, onSubmit }: Props) {
                     />
                   </div>
                   
-                  <div className="flex-1">
-                    <h3 className="font-bold text-cream">{cartItem.name}</h3>
-                    <p className="text-sm text-cream-dim">{cartItem.category}</p>
+                  <div className="flex-1 flex items-center">
+                    <p className="text-xs uppercase tracking-widest text-cream-dim font-bold">{cartItem.category}</p>
                   </div>
                   
                   <div className="flex items-center gap-4 mt-2 sm:mt-0 bg-secondary px-2 py-1 rounded shrink-0 border border-ink">

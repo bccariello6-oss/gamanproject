@@ -520,8 +520,8 @@ export default function MenuApp() {
                       {stillPending ? '⏳' : '✓'}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className={`text-sm font-medium block truncate transition-all duration-500 ${stillPending ? 'text-cream' : 'text-green-400 line-through opacity-70'}`}>
-                        {item.name}
+                      <span className={`text-[0.65rem] uppercase tracking-widest font-bold transition-all duration-500 ${stillPending ? 'text-amber' : 'text-green-400 opacity-70'}`}>
+                        {item.category}
                       </span>
                     </div>
                     <span className={`text-xs font-bold shrink-0 px-1.5 py-0.5 rounded transition-all duration-500 ${stillPending ? 'bg-amber/10 text-amber' : 'bg-green-500/20 text-green-400'}`}>
@@ -598,14 +598,14 @@ const ItemCard: React.FC<{ item: MenuItem; index: number }> = ({ item, index }) 
       className="bg-card rounded-xl overflow-hidden flex flex-col sm:flex-row h-auto min-h-[160px] transition-all duration-300 hover:-translate-y-1 shadow-[0_8px_32px_rgba(0,0,0,0.6)] border border-amber-dim/10 hover:border-crimson/50 animate-fade-in-up"
       style={{ animationDelay: animDelay, animationFillMode: 'both' }}
     >
-      <div className="w-full sm:w-1/3 h-40 sm:h-auto relative shrink-0">
+      <div className="w-full sm:w-1/3 h-48 sm:h-auto relative shrink-0 overflow-hidden">
         <img 
           src={item.image} 
           alt={item.name} 
           onError={handleImageError}
-          className="absolute inset-0 w-full h-full object-cover" 
+          className="absolute inset-0 w-full h-full object-cover scale-[1.35] transition-transform duration-700 hover:scale-[1.45]" 
         />
-        <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-transparent to-card" />
+        <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-transparent via-card/10 to-card" />
       </div>
       
       <div className="w-full sm:w-2/3 p-4 flex flex-col justify-between">
